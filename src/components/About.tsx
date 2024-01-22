@@ -12,10 +12,44 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const GenderSchema = z.enum(["male", "female"]);
+const AboutSchema = z.object({
+  displayName: z
+    .string()
+    .min(3, { message: "Display name must be at least 3 characters" }),
+  gender: GenderSchema,
+  birthday: z.date(),
+  height: z.number().min(2, { message: "Please specify your height" }),
+  weight: z.number().min(1, { message: "Please specify your weight" }),
+});
+
+type TAboutSchema = z.infer<typeof AboutSchema>;
 
 const About = () => {
-  const [isAboutOpen, setIsAboutOpen] = useState<boolean>(false);
+  const [isAboutOpen, setIsAboutOpen] = useState<boolean>(true);
   const [date, setDate] = useState<Date | undefined>(undefined);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TAboutSchema>({
+    resolver: zodResolver(AboutSchema),
+  });
+
+  const handleSave = ({
+    displayName,
+    birthday,
+    gender,
+    height,
+    weight,
+  }: TAboutSchema) => {
+    console.log({ displayName, height, weight });
+    setIsAboutOpen((prev) => !prev);
+  };
 
   return (
     <div
@@ -36,14 +70,7 @@ const About = () => {
               className=" text-white cursor-pointer"
               onClick={() => setIsAboutOpen((prev) => !prev)}
             />
-          ) : (
-            <button
-              className="text-xs !m-0 !p-0 gold text-transparent bg-clip-text"
-              onClick={() => setIsAboutOpen((prev) => !prev)}
-            >
-              Save & Update
-            </button>
-          )}
+          ) : null}
         </div>
         <div className="flex flex-row justify-between mx-5 m-3">
           {isAboutOpen ? (
@@ -73,7 +100,10 @@ const About = () => {
                 </label>
               </div>
               <div className="grid gap-1 my-10">
-                <form className="w-full flex flex-col gap-3 text-sm font-medium">
+                <form
+                  onSubmit={handleSubmit(handleSave)}
+                  className="w-full flex flex-col gap-3 text-sm font-medium"
+                >
                   <div className="flex items-center">
                     <label
                       htmlFor="name"
@@ -81,12 +111,20 @@ const About = () => {
                     >
                       Display name:
                     </label>
-                    <input
-                      type="text"
-                      id="name"
-                      className="w-2/3 bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 placeholder:text-white placeholder:text-opacity-40 text-right border border-gray-600"
-                      placeholder="Enter name"
-                    />
+                    <div className="flex flex-col w-2/3">
+                      <input
+                        type="text"
+                        id="name"
+                        className="w-2/3 bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 placeholder:text-white placeholder:text-opacity-40 text-right border border-gray-600"
+                        placeholder="Enter name"
+                        {...register("displayName")}
+                      />
+                      {errors?.gender && (
+                        <span className="text-xs text-gray-500">
+                          {errors.gender.message}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center">
                     <label
@@ -95,59 +133,70 @@ const About = () => {
                     >
                       Gender:
                     </label>
-                    <Select>
-                      <SelectTrigger
-                        dir="rtl"
-                        className="w-2/3 bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 !text-right border border-gray-600 !appearance-none placeholder:text-right "
-                      >
-                        <SelectValue
-                          className="text-white !text-opacity-40"
-                          placeholder="Select Gender"
-                        />
-                      </SelectTrigger>
-                      <SelectContent
-                        dir="rtl"
-                        position="popper"
-                        sideOffset={5}
-                        align="end"
-                        className={
-                          "bg-gray-800 border-none text-white outline-none"
-                        }
-                      >
-                        <SelectItem value="male" className=" ">
-                          Male
-                        </SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex flex-col w-2/3">
+                      <Select>
+                        <SelectTrigger
+                          dir="rtl"
+                          className=" bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 !text-right border border-gray-600 !appearance-none placeholder:text-right "
+                        >
+                          <SelectValue
+                            className="text-white !text-opacity-40"
+                            placeholder="Select Gender"
+                            // {...register("gender")}
+                          />
+                        </SelectTrigger>
+                        <SelectContent
+                          dir="rtl"
+                          position="popper"
+                          sideOffset={5}
+                          align="end"
+                          className={
+                            "bg-gray-800 border-none text-white outline-none"
+                          }
+                        >
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors?.gender && (
+                        <span className="text-xs text-gray-500">
+                          {errors.gender.message}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center">
                     <label className="text-muted-foreground w-1/3">
                       Birthday:
                     </label>
-
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button className="w-2/3 bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 text-right border border-gray-600">
-                          {date ? (
-                            format(date, "dd MM yyyy")
-                          ) : (
-                            <span className="text-gray-500">DD MM YYYY</span>
-                          )}
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="bg-color text-white px-2">
-                        <Calendar
-                          captionLayout="dropdown-buttons"
-                          fromYear={1990}
-                          toYear={2020}
-                          selected={date}
-                          onSelect={setDate}
-                          mode="single"
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <div className="flex flex-col w-2/3">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button className=" bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 text-right border border-gray-600">
+                            {date ? (
+                              format(date, "dd MM yyyy")
+                            ) : (
+                              <span className="text-gray-500">DD MM YYYY</span>
+                            )}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="bg-color text-white px-2">
+                          <Calendar
+                            captionLayout="dropdown-buttons"
+                            selected={date}
+                            onSelect={setDate}
+                            mode="single"
+                            initialFocus
+                            {...register("birthday")}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      {errors?.birthday && (
+                        <span className="text-xs text-gray-500">
+                          {errors.birthday.message}
+                        </span>
+                      )}
+                    </div>
 
                     {/* <input
                       type="text"
@@ -181,22 +230,44 @@ const About = () => {
                     <label className="text-muted-foreground w-1/3">
                       Height:
                     </label>
-                    <input
-                      type="text"
-                      className="w-2/3 bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 placeholder:text-white placeholder:text-opacity-40 text-right border border-gray-600"
-                      placeholder="Add height"
-                    />
+                    <div className="flex flex-col w-2/3">
+                      <input
+                        type="number"
+                        className=" bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 placeholder:text-white placeholder:text-opacity-40 text-right border border-gray-600"
+                        placeholder="Add height"
+                        {...register("height", { valueAsNumber: true })}
+                      />
+                      {errors?.height && (
+                        <span className="text-xs text-gray-500">
+                          {errors.height.message}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center">
                     <label className="text-muted-foreground w-1/3">
                       Weight:
                     </label>
-                    <input
-                      type="text"
-                      className="w-2/3 bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 placeholder:text-white placeholder:text-opacity-40 text-right border border-gray-600"
-                      placeholder="Add weight"
-                    />
+                    <div className="flex flex-col w-2/3">
+                      <input
+                        type="number"
+                        className="bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 placeholder:text-white placeholder:text-opacity-40 text-right border border-gray-600"
+                        placeholder="Add weight"
+                        {...register("weight", { valueAsNumber: true })}
+                      />
+                      {errors?.weight && (
+                        <span className="text-xs text-gray-500">
+                          {errors.weight.message}
+                        </span>
+                      )}
+                    </div>
                   </div>
+                  <button
+                    className="text-xs !m-0 !p-0 gold text-transparent bg-clip-text"
+                    type="submit"
+                  >
+                    Save & Update
+                  </button>
                 </form>
               </div>
             </div>
