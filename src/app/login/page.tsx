@@ -1,13 +1,14 @@
 "use client";
 import WidthWrapper from "@/components/WidthWrapper";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios, { AxiosError } from "axios";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const UserSchema = z.object({
@@ -16,7 +17,7 @@ const UserSchema = z.object({
     .min(6, { message: "Username or email must be at least 6 characters." }),
   password: z
     .string()
-    .min(6, { message: "Password must be at least 6 characters." }),
+    .min(8, { message: "Password must be at least 8 characters." }),
 });
 
 type TUserSchema = z.infer<typeof UserSchema>;
@@ -33,10 +34,46 @@ const Login = () => {
   });
 
   const handleLogin = ({ username, password }: TUserSchema) => {
-    // TODO LOGIN WITH API
-    console.log({ username, password });
+    const data = JSON.stringify({
+      email: username.includes("@") ? username : "",
+      username: username.includes("@") ? "" : username,
+      password,
+    });
 
-    router.push("/profile");
+    let axiosConfig = {
+      method: "POST",
+      url: "https://techtest.youapp.ai/api/login",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    const fetchdata = async () => {
+      try {
+        const res = await axios.request(axiosConfig);
+
+        if (res.data.message == "User not found") toast("User not found");
+        if (res.data.message == "Incorrect password")
+          toast("Incorrect password");
+
+        if (res.data.message == "User has been logged in successfully") {
+          toast("Login successfully");
+          router.push("/profile");
+        }
+
+        console.log({ res });
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          throw new Error(
+            `${error.code}: Something went wrong ${error.message}`
+          );
+        }
+        throw new Error("Something went wrong");
+      }
+    };
+
+    fetchdata();
   };
 
   return (

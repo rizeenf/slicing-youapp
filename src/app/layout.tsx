@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import NonSSRWrapper from "@/components/NonSSRWrapper";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,11 +25,12 @@ export default function RootLayout({
           inter.className
         )}
       >
-        <NonSSRWrapper>
-          <main className="relative min-h-screen flex flex-col text-white">
-            {children}
-          </main>
-        </NonSSRWrapper>
+        {/* <NonSSRWrapper> */}
+        <main className="relative min-h-screen flex flex-col text-white">
+          {children}
+          <Toaster />
+        </main>
+        {/* </NonSSRWrapper> */}
       </body>
     </html>
   );
