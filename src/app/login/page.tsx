@@ -6,13 +6,13 @@ import WidthWrapper from "@/components/WidthWrapper";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios, { AxiosError } from "axios";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useState } from "react";
 
 const UserSchema = z.object({
   username: z
@@ -26,6 +26,7 @@ const UserSchema = z.object({
 type TUserSchema = z.infer<typeof UserSchema>;
 
 const Login = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const {
@@ -37,30 +38,38 @@ const Login = () => {
   });
 
   const handleLogin = async ({ username, password }: TUserSchema) => {
-    const result = await signIn("credentials", {
-      email: username.includes("@") ? username : "",
-      username: username.includes("@") ? "" : username,
-      password,
+    try {
+      setIsLoading(true);
 
-      redirect: false,
-    });
+      const result = await signIn("credentials", {
+        email: username.includes("@") ? username : "",
+        username: username.includes("@") ? "" : username,
+        password,
 
-    if (result?.error) {
-      toast("User not found", {
-        action: {
-          label: "Close",
-          onClick: () => console.log(),
-        },
+        redirect: false,
       });
-    } else {
-      toast("Logged in successfully", {
-        action: {
-          label: "Close",
-          onClick: () => console.log(),
-        },
-      });
-      router.push("/profile");
-      router.refresh();
+
+      if (result?.error) {
+        toast("User not found", {
+          action: {
+            label: "Close",
+            onClick: () => console.log(),
+          },
+        });
+      } else {
+        toast("Logged in successfully", {
+          action: {
+            label: "Close",
+            onClick: () => console.log(),
+          },
+        });
+        router.push("/profile");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -110,11 +119,15 @@ const Login = () => {
               </div>
               <div className="grid gap-1 py-4">
                 <Button
+                  disabled={isLoading}
                   type="submit"
                   variant={"default"}
                   size={"lg"}
                   className="text-base font-bold bg-button rounded-lg shadow-xl shadow-gray-600"
                 >
+                  {isLoading ? (
+                    <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                  ) : null}
                   Login
                 </Button>
               </div>

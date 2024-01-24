@@ -14,7 +14,7 @@ const Interest = () => {
 
   const [inputInterest, setInputInterest] = useState<string>("");
   const [listInterest, setListInterest] = useState<string[]>([]);
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
 
   const profile: TSession | null = session?.user as TSession;
 
@@ -68,6 +68,13 @@ const Interest = () => {
           router.refresh();
           toast("Saved");
           router.push("/profile");
+          await update({
+            ...session,
+            user: {
+              ...session?.user,
+              data: res.data,
+            },
+          });
         }
       } catch (error) {
         toast("Error while saving, please try again");
@@ -87,7 +94,7 @@ const Interest = () => {
     <div className="py-12 w-full animate-in duration-500 fade-in-5">
       <div className="flex flex-row justify-between items-center px-2">
         <div className="flex flex-row gap-1 items-center">
-          <Link href={"/"} className="flex flex-row gap-1 items-center">
+          <Link href={"/profile"} className="flex flex-row gap-1 items-center">
             <ChevronLeft size={24} />
             <span className="font-back">Back</span>
           </Link>

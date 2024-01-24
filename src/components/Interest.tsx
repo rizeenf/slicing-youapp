@@ -1,5 +1,4 @@
 "use client";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { TSession } from "@/app/profile/page";
 import { PencilLine } from "lucide-react";
 import { useSession } from "next-auth/react";

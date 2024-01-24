@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -32,6 +33,7 @@ type TUserRegisterSchema = z.infer<typeof UserRegisterSchema>;
 
 const Register = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -64,6 +66,7 @@ const Register = () => {
 
     const fetch = async () => {
       try {
+        setIsLoading(true);
         const res = await axios.request(axiosConfig);
 
         if (res.data.statusCode == 400)
@@ -85,6 +88,8 @@ const Register = () => {
           );
         }
         throw new Error("Something went wrong");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -166,11 +171,15 @@ const Register = () => {
               </div>
               <div className="grid gap-1 py-4">
                 <Button
+                  disabled={isLoading}
                   type="submit"
                   variant={"default"}
                   size={"lg"}
                   className="text-base font-bold bg-button rounded-lg shadow-xl shadow-gray-600"
                 >
+                  {isLoading ? (
+                    <Loader2 className="w-3 h-3 animate-spin mr-1" />
+                  ) : null}
                   Register
                 </Button>
               </div>

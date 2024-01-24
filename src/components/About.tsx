@@ -4,10 +4,10 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
 import { format } from "date-fns";
-import { PencilLine } from "lucide-react";
+import { Loader2, PencilLine } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -35,12 +35,12 @@ const About = () => {
   const [isAboutOpen, setIsAboutOpen] = useState<boolean>(true);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [isPending, setPending] = useState<boolean>(false);
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const [isTransitionStarted, startTransition] = useTransition();
 
-  const isMutating = isPending || isTransitionStarted;
+  let profile: TSession | null = session?.user as TSession;
 
-  const profile: TSession | null = session?.user as TSession;
+  const isMutating = isPending || isTransitionStarted;
 
   const {
     register,
@@ -58,20 +58,11 @@ const About = () => {
     height,
     weight,
   }: TAboutSchema) => {
-    console.log({
-      displayName,
-      birthday: date && format(date, "MM dd yyyy"),
-      gender,
-      height,
-      weight,
-    });
-
     const data = JSON.stringify({
       name: displayName,
       birthday: date && format(date, "MM dd yyyy"),
       height,
       weight,
-      // interests: [],
     });
 
     let axiosConfig = {
@@ -91,11 +82,18 @@ const About = () => {
 
         if (res.status == 201 || res.status == 200) {
           setPending(true);
+          await update({
+            ...session,
+            user: {
+              ...session?.user,
+              data: res.data,
+            },
+          });
 
-          startTransition(router.refresh);
-          router.refresh();
-          router.push("/profile");
-          toast("Saved");
+          startTransition(() => {
+            router.push("/profile");
+            toast("Saved");
+          });
         }
       } catch (error) {
         toast("Error while saving, please try again");
@@ -118,7 +116,7 @@ const About = () => {
   };
 
   if (status == "loading") {
-    return null;
+    return <Loader2 className="w-5 h-5 animate-spin mr-1" />;
   }
 
   return (
@@ -142,7 +140,11 @@ const About = () => {
             />
           ) : null}
         </div>
-        {isMutating ? null : (
+        {isMutating ? (
+          <div className=" flex justify-center items-center h-40 w-full ">
+            <Loader2 className="w-5 h-5 animate-spin mr-1 opacity-40" />
+          </div>
+        ) : (
           <div className="flex flex-row justify-between mx-5">
             {isAboutOpen ? (
               profile?.data?.name ? (
@@ -242,7 +244,7 @@ const About = () => {
                           type="text"
                           id="name"
                           className="bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 placeholder:text-white placeholder:text-opacity-40 text-right border border-gray-600"
-                          placeholder="Enter name"
+                          placeholder={profile?.data?.username ?? "Enter name"}
                           {...register("displayName")}
                         />
                         {errors?.displayName && (
@@ -308,7 +310,9 @@ const About = () => {
                               {date ? (
                                 format(date, "dd MM yyyy")
                               ) : (
-                                <span>DD MM YYYY</span>
+                                <span>
+                                  {profile?.data?.birthday ?? "DD MM YYYY"}
+                                </span>
                               )}
                             </Button>
                           </PopoverTrigger>
@@ -342,7 +346,7 @@ const About = () => {
                         type="text"
                         className="w-2/3 bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 placeholder:text-white placeholder:text-opacity-40 text-right border border-gray-600"
                         disabled
-                        placeholder="--"
+                        placeholder={profile?.data?.horoscope ?? "--"}
                       />
                     </div>
                     <div className="flex items-center">
@@ -353,7 +357,7 @@ const About = () => {
                         type="text"
                         className="w-2/3 bg-white bg-opacity-5 !rounded-lg px-5 py-3 placeholder:text-sm ring-gray-500 placeholder:text-white placeholder:text-opacity-40 text-right border border-gray-600"
                         disabled
-                        placeholder="--"
+                        placeholder={profile?.data?.zodiac ?? "--"}
                       />
                     </div>
                     <div className="flex items-center">

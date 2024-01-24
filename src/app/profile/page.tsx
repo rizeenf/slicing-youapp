@@ -2,12 +2,12 @@ import About from "@/components/About";
 import Interest from "@/components/Interest";
 import Navbar from "@/components/Navbar";
 import WidthWrapper from "@/components/WidthWrapper";
+import { authOptions } from "@/utils/nextAuthOptions";
 import { format } from "date-fns";
 import { PencilLine } from "lucide-react";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { authOptions } from "../api/auth/[...nextauth]/route";
 
 interface UserData {
   email: string;
@@ -49,7 +49,7 @@ const Profile = async () => {
               src={"/no-image.jpg"}
               alt="Profile Image"
               fill
-              className="opacity-10 object-cover"
+              className="opacity-5 object-cover"
             />
           ) : (
             <div
@@ -57,7 +57,6 @@ const Profile = async () => {
               className="bg-[#162329] min-w-[400px] max-w-[500px] h-full aspect-video"
             />
           )}
-          <PencilLine size={18} className="absolute right-3 top-3 text-white" />
           <div className="absolute inset-x-2 bottom-2">
             <h2 className="font-back text-base">
               {profile?.data?.name
@@ -65,7 +64,7 @@ const Profile = async () => {
                     parseInt(format(new Date(), "yyyy")) -
                     parseInt(format(profile?.data?.birthday, "yyyy"))
                   }`
-                : "@johndoe,"}
+                : "@username,"}
             </h2>
             <div className="flex flex-row gap-2">
               <div className="bg-gray-800 p-2 px-4 mt-2 rounded-2xl ">
