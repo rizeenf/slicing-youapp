@@ -26,7 +26,7 @@ const Navbar = () => {
   const profile: TSession | null = session?.user as TSession;
 
   return (
-    <div className="flex flex-row justify-between items-center">
+    <div className="flex flex-row justify-between items-center min-w-[300px] max-w-[500px]">
       <div className="flex flex-row gap-1 items-center">
         <Link href={"/"} className="flex flex-row gap-1 items-center">
           <ChevronLeft size={24} />
