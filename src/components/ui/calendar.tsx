@@ -50,8 +50,8 @@ function Calendar({
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
         ),
         day_selected:
-          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-        day_today: "bg-accent text-accent-foreground",
+          "bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+        day_today: "",
         day_outside: "text-muted-foreground opacity-50",
         day_disabled: "text-muted-foreground opacity-50",
         day_range_middle:
@@ -78,13 +78,10 @@ function Calendar({
                 handleChange(value);
               }}
             >
-              <SelectTrigger className="px-1.5 focus:ring-0 bg-gray-800 text-white">
+              <SelectTrigger className="pr-1.5 focus:ring-0 bg-gray-800 text-white">
                 <SelectValue>{selected?.props?.children}</SelectValue>
               </SelectTrigger>
-              <SelectContent
-                position="popper"
-                className="bg-gray-800 text-white"
-              >
+              <SelectContent position="popper">
                 <ScrollArea className="h-80">
                   {options.map((option, id: number) => (
                     <SelectItem
@@ -99,8 +96,8 @@ function Calendar({
             </Select>
           );
         },
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-3 w-3" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-3 w-3" />,
+        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />

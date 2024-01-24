@@ -1,4 +1,7 @@
 "use client";
+
+import { signIn } from "next-auth/react";
+
 import WidthWrapper from "@/components/WidthWrapper";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -33,47 +36,32 @@ const Login = () => {
     resolver: zodResolver(UserSchema),
   });
 
-  const handleLogin = ({ username, password }: TUserSchema) => {
-    const data = JSON.stringify({
+  const handleLogin = async ({ username, password }: TUserSchema) => {
+    const result = await signIn("credentials", {
       email: username.includes("@") ? username : "",
       username: username.includes("@") ? "" : username,
       password,
+
+      redirect: false,
     });
 
-    let axiosConfig = {
-      method: "POST",
-      url: "https://techtest.youapp.ai/api/login",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: data,
-    };
-
-    const fetchdata = async () => {
-      try {
-        const res = await axios.request(axiosConfig);
-
-        if (res.data.message == "User not found") toast("User not found");
-        if (res.data.message == "Incorrect password")
-          toast("Incorrect password");
-
-        if (res.data.message == "User has been logged in successfully") {
-          toast("Login successfully");
-          router.push("/profile");
-        }
-
-        console.log({ res });
-      } catch (error) {
-        if (error instanceof AxiosError) {
-          throw new Error(
-            `${error.code}: Something went wrong ${error.message}`
-          );
-        }
-        throw new Error("Something went wrong");
-      }
-    };
-
-    fetchdata();
+    if (result?.error) {
+      toast("User not found", {
+        action: {
+          label: "Close",
+          onClick: () => console.log(),
+        },
+      });
+    } else {
+      toast("Logged in successfully", {
+        action: {
+          label: "Close",
+          onClick: () => console.log(),
+        },
+      });
+      router.push("/profile");
+      router.refresh();
+    }
   };
 
   return (

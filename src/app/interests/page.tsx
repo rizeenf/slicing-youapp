@@ -1,12 +1,30 @@
 "use client";
 import WidthWrapper from "@/components/WidthWrapper";
+import axios, { AxiosError } from "axios";
 import { ChevronLeft, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { ChangeEvent, KeyboardEvent, useState } from "react";
+import { redirect, useRouter } from "next/navigation";
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { TSession } from "../profile/page";
 
 const Interest = () => {
+  const router = useRouter();
+
   const [inputInterest, setInputInterest] = useState<string>("");
   const [listInterest, setListInterest] = useState<string[]>([]);
+  const { data: session, status } = useSession();
+
+  const profile: TSession | null = session?.user as TSession;
+
+  if (!session || !session.user) {
+    redirect("/api/auth/signin");
+  }
+
+  useEffect(() => {
+    setListInterest(profile?.data?.interests);
+  }, []);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputInterest(e.target.value);
@@ -24,6 +42,47 @@ const Interest = () => {
     setListInterest(listInterest.filter((tag) => tag !== clickedTag));
   };
 
+  const handleSave = () => {
+    const data = JSON.stringify({
+      interests: listInterest,
+    });
+
+    let axiosConfig = {
+      method: "PUT",
+      url: "https://techtest.youapp.ai/api/updateProfile",
+      headers: {
+        "Content-Type": "application/json",
+        //@ts-expect-error
+        "x-access-token": session?.accessToken,
+      },
+      data: data,
+    };
+
+    const fetchdata = async () => {
+      try {
+        const res = await axios.request(axiosConfig);
+
+        if (res.status !== 201 && res.status !== 200) {
+          toast("Error while saving, please try again");
+        } else {
+          router.refresh();
+          toast("Saved");
+          router.push("/profile");
+        }
+      } catch (error) {
+        toast("Error while saving, please try again");
+        if (error instanceof AxiosError) {
+          throw new Error(
+            `${error.code}: Something went wrong ${error.message}`
+          );
+        }
+        throw new Error("Something went wrong");
+      }
+    };
+
+    fetchdata();
+  };
+
   return (
     <div className="py-12 w-full animate-in duration-500 fade-in-5">
       <div className="flex flex-row justify-between items-center px-2">
@@ -35,7 +94,10 @@ const Interest = () => {
         </div>
 
         <div className="flex flex-row items-center justify-center px-3">
-          <button className="text-sm font-semibold bg-gradient-to-tl from-blue-400 to-blue-100 text-transparent bg-clip-text ">
+          <button
+            onClick={handleSave}
+            className="text-sm font-semibold bg-gradient-to-tl from-blue-400 to-blue-100 text-transparent bg-clip-text "
+          >
             Save
           </button>
         </div>
