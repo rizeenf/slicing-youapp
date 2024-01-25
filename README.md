@@ -7,6 +7,7 @@ This project is a take-home test application that includes login, register, and 
 - [Technologies Used](#technologies-used)
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
+- [Usage for emulator](#usage-for-emulator)
 
 ## Technologies Used
 
@@ -35,7 +36,8 @@ This project is a take-home test application that includes login, register, and 
    npm run dev
    # or
    yarn dev
-   
+
+   ```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 
@@ -58,6 +60,29 @@ The project is organized as follows:
 - utils/: Utility
 
 
+## Usage for Emulator
+
+After installing dependencies, you can run in your own emulator.
+
+   ```bash
+   npm run static
+   # or
+   yarn static
+
+
+   npx cap add android  //for android emulator
+   # or
+   npx cap add ios      //for ios emulator
+
+
+   npx cap open android
+   # or
+   npx cap open ios
+
+   # please make sure you already install
+    - Android Studio (For Android Emulator)
+    - Xcode (For Ios Emulator)
+   ```
 
 ## Deploy on Vercel
 
