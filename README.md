@@ -1,33 +1,63 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Take Home Test Project Documentation
+
+This project is a take-home test application that includes login, register, and profile pages based on the Figma design.
+
+## Table of Contents
+
+- [Technologies Used](#technologies-used)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+
+## Technologies Used
+
+- [Next.js](https://nextjs.org/): React framework for building web applications.
+- [Capacitor](https://capacitorjs.com/): Cross-platform app runtime used for mobile deployment.
+- [Tailwind CSS](https://tailwindcss.com/): CSS framework for styling.
+- [Shadcn/ui](https://ui.shadcn.com/): Component library for Tailwind.
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+   ```bash
+   git clone https://github.com/rizeenf/slicing-youapp.git
 
+   cd slicing-youapp
+
+   npm install
+   # or
+   yarn
+   
+
+   npx cap sync
+
+
+   npm run dev
+   # or
+   yarn dev
+   
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+## Or you can simply visit this page 
+Open [https://slicing-youapp.vercel.app/](https://slicing-youapp.vercel.app/) with your browser.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+
+## Project Structure
+The project is organized as follows:
+
+- app/: Next.js pages app router.
+- components/: Reusable React components.
+- public/: Static assets.
+- hooks/: Custom hooks.
+- types/: Types for typescript.
+- utils/: Utility
+
+
 
 ## Deploy on Vercel
 
