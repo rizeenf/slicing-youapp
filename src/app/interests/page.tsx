@@ -1,5 +1,6 @@
 "use client";
 import WidthWrapper from "@/components/WidthWrapper";
+import { TSession } from "@/types/Session";
 import axios, { AxiosError } from "axios";
 import { ChevronLeft, X } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -7,7 +8,6 @@ import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { TSession } from "../profile/page";
 
 const Interest = () => {
   const router = useRouter();
@@ -31,10 +31,14 @@ const Interest = () => {
   };
 
   const handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && inputInterest.trim() !== "") {
-      e.preventDefault();
-      setListInterest([...listInterest, inputInterest.trim()]);
-      setInputInterest("");
+    if (e.key === "Enter" || e.keyCode === 13 || e.code === "Space") {
+      if (inputInterest.trim() !== "") {
+        e.preventDefault();
+        setListInterest([...listInterest, inputInterest.trim()]);
+        setInputInterest("");
+      } else {
+        toast("Please input your interest first.");
+      }
     }
   };
 

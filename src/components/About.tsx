@@ -1,5 +1,4 @@
 "use client";
-import { TSession } from "@/app/profile/page";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
@@ -7,28 +6,14 @@ import { format } from "date-fns";
 import { Loader2, PencilLine } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-
-const GenderSchema = z.enum(["male", "female"], {
-  errorMap: () => ({ message: "Please select your gender" }),
-});
-const AboutSchema = z.object({
-  displayName: z
-    .string()
-    .min(3, { message: "Display name must be at least 3 characters" }),
-  gender: GenderSchema,
-  birthday: z.string(),
-  height: z.number().min(2, { message: "Please specify your height" }),
-  weight: z.number().min(1, { message: "Please specify your weight" }),
-});
-
-type TAboutSchema = z.infer<typeof AboutSchema>;
+import { AboutSchema, TAboutSchema } from "@/lib/user-details-schema";
+import { TSession } from "@/types/Session";
 
 const About = () => {
   const router = useRouter();
@@ -115,10 +100,6 @@ const About = () => {
     setIsAboutOpen((prev) => !prev);
   };
 
-  if (status == "loading") {
-    return <Loader2 className="w-5 h-5 animate-spin mr-1" />;
-  }
-
   return (
     <div
       className={cn(
@@ -140,7 +121,7 @@ const About = () => {
             />
           ) : null}
         </div>
-        {isMutating ? (
+        {status === "loading" || isMutating ? (
           <div className=" flex justify-center items-center h-40 w-full ">
             <Loader2 className="w-5 h-5 animate-spin mr-1 opacity-40" />
           </div>
@@ -155,7 +136,7 @@ const About = () => {
                       <span className="font font-medium text-white">
                         {format(profile?.data?.birthday, "dd / MM / yyyy")} /
                         (Age{" "}
-                        {parseInt(format(new Date(), "yyyy")) -
+                        {2024 -
                           parseInt(format(profile?.data?.birthday, "yyyy"))}
                         )
                       </span>
@@ -324,10 +305,11 @@ const About = () => {
                             <Calendar
                               mode="single"
                               captionLayout="dropdown-buttons"
-                              selected={date}
+                              //@ts-expect-error
+                              selected={profile?.data?.birthday ?? date}
                               onSelect={setDate}
                               fromYear={1960}
-                              toYear={2030}
+                              toYear={2024}
                             />
                           </PopoverContent>
                         </Popover>

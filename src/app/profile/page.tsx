@@ -2,33 +2,12 @@ import About from "@/components/About";
 import Interest from "@/components/Interest";
 import Navbar from "@/components/Navbar";
 import WidthWrapper from "@/components/WidthWrapper";
+import { TSession } from "@/types/Session";
 import { authOptions } from "@/utils/nextAuthOptions";
 import { format } from "date-fns";
-import { PencilLine } from "lucide-react";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-
-interface UserData {
-  email: string;
-  username: string;
-  name: string;
-  birthday: string;
-  horoscope: string;
-  zodiac: string;
-  height: number;
-  weight: number;
-  interests: string[];
-}
-
-export type TSession = {
-  accessToken?: string | null | undefined;
-  name?: string | null | undefined;
-  email?: string | null | undefined;
-  image?: string | null | undefined;
-  message?: string | null | undefined;
-  data: UserData;
-};
 
 const Profile = async () => {
   const session = await getServerSession(authOptions);
@@ -61,8 +40,7 @@ const Profile = async () => {
             <h2 className="font-back text-base">
               {profile?.data?.name
                 ? `@${profile?.data?.username}, ${
-                    parseInt(format(new Date(), "yyyy")) -
-                    parseInt(format(profile?.data?.birthday, "yyyy"))
+                    2024 - parseInt(format(profile?.data?.birthday, "yyyy"))
                   }`
                 : "@username,"}
             </h2>

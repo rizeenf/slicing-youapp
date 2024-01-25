@@ -1,23 +1,19 @@
 "use client";
-import { TSession } from "@/app/profile/page";
-import { ChevronLeft, Diamond } from "lucide-react";
+import { ChevronLeft, Diamond, Loader2 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+import { TSession } from "@/types/Session";
 
 const Navbar = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
-
-  if (status == "loading") {
-    return null;
-  }
 
   const handleLogout = () => {
     signOut();
@@ -34,11 +30,17 @@ const Navbar = () => {
         </Link>
       </div>
 
-      <div className="flex flex-row items-center justify-center">
-        <span className="font-back">
-          {status == "authenticated" ? profile?.data?.name : "Not logged in"}
-        </span>
-      </div>
+      {status == "loading" ? (
+        <div className=" flex justify-center items-center h-40 w-full ">
+          <Loader2 className="w-5 h-5 animate-spin mr-1 opacity-40" />
+        </div>
+      ) : (
+        <div className="flex flex-row items-center justify-center">
+          <span className="font-back">
+            {status == "authenticated" ? profile?.data?.name : "Not logged in"}
+          </span>
+        </div>
+      )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div className="flex flex-row gap-[2px] mr-2 py-2">

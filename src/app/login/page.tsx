@@ -13,17 +13,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useState } from "react";
-
-const UserSchema = z.object({
-  username: z
-    .string()
-    .min(6, { message: "Username or email must be at least 6 characters." }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters." }),
-});
-
-type TUserSchema = z.infer<typeof UserSchema>;
+import { TUserSchema, UserSchema } from "@/lib/user-login-schema";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);

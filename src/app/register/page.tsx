@@ -1,6 +1,10 @@
 "use client";
 import WidthWrapper from "@/components/WidthWrapper";
 import { Button } from "@/components/ui/button";
+import {
+  TUserRegisterSchema,
+  UserRegisterSchema,
+} from "@/lib/user-register-schema";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
@@ -10,26 +14,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
-
-const UserRegisterSchema = z
-  .object({
-    email: z.string().email({ message: "Please enter a valid email address" }),
-    username: z
-      .string()
-      .min(6, { message: "Username must be at least 6 characters." }),
-    password: z
-      .string()
-      .min(8, { message: "Password must be at least 8 characters." }),
-    cpassword: z
-      .string()
-      .min(8, { message: "Password must be at least 8 characters." }),
-  })
-  .refine((data) => data.password === data.cpassword, {
-    message: "Password should match",
-    path: ["cpassword"],
-  });
-type TUserRegisterSchema = z.infer<typeof UserRegisterSchema>;
 
 const Register = () => {
   const router = useRouter();
