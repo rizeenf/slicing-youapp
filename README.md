@@ -12,6 +12,7 @@ This project is a take-home test application that includes login, register, and 
 ## Technologies Used
 
 - [Next.js](https://nextjs.org/): React framework for building web applications.
+- [NextAuth.js](https://next-auth.js.org/): Authentication for Next.js.
 - [Capacitor](https://capacitorjs.com/): Cross-platform app runtime used for mobile deployment.
 - [Tailwind CSS](https://tailwindcss.com/): CSS framework for styling.
 - [Shadcn/ui](https://ui.shadcn.com/): Component library for Tailwind.
